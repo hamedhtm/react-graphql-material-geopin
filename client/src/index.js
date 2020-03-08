@@ -1,12 +1,13 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
-import App from "./pages/App";
-import Splash from "./pages/Splash";
+import App from './pages/App';
+import Splash from './pages/Splash';
 
-import "mapbox-gl/dist/mapbox-gl.css";
-import * as serviceWorker from "./serviceWorker";
+import 'mapbox-gl/dist/mapbox-gl.css';
+import * as serviceWorker from './serviceWorker';
+import AuthProvider from './AuthContext';
 
 const Root = () => {
   return (
@@ -19,7 +20,12 @@ const Root = () => {
   );
 };
 
-ReactDOM.render(<Root />, document.getElementById("root"));
+ReactDOM.render(
+  <AuthProvider>
+    <Root />
+  </AuthProvider>,
+  document.getElementById('root'),
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
