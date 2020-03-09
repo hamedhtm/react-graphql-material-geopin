@@ -3,6 +3,7 @@ export const AuthContext = createContext(undefined);
 
 const initialState = {
   currentUser: null,
+  location: null,
 };
 
 const authReducer = (state, { type, payload }) => {
@@ -16,6 +17,21 @@ const authReducer = (state, { type, payload }) => {
       return {
         ...state,
         currentUser: null,
+      };
+    }
+    case 'CREATE_DRAFT': {
+      return {
+        ...state,
+        draft: {
+          latitude: 0,
+          longitude: 0,
+        },
+      };
+    }
+    case 'UPDATE_DRAFT_LOCATION': {
+      return {
+        ...state,
+        draft: payload,
       };
     }
     default:
@@ -39,8 +55,23 @@ const AuthProvider = ({ children }) => {
     });
   };
 
+  const createDraft = () => {
+    dispatch({
+      type: 'CREATE_DRAFT',
+    });
+  };
+
+  const updateDraftLocation = data => {
+    dispatch({
+      type: 'UPDATE_DRAFT_LOCATION',
+      payload: data,
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ state, logIn, logOut }}>
+    <AuthContext.Provider
+      value={{ state, logIn, logOut, createDraft, updateDraftLocation }}
+    >
       {children}
     </AuthContext.Provider>
   );
