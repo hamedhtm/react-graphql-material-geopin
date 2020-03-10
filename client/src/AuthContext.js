@@ -34,6 +34,12 @@ const authReducer = (state, { type, payload }) => {
         draft: payload,
       };
     }
+    case 'Discard': {
+      return {
+        ...state,
+        draft: null,
+      };
+    }
     default:
       return state;
   }
@@ -61,6 +67,12 @@ const AuthProvider = ({ children }) => {
     });
   };
 
+  const discard = () => {
+    dispatch({
+      type: 'Discard',
+    });
+  };
+
   const updateDraftLocation = data => {
     dispatch({
       type: 'UPDATE_DRAFT_LOCATION',
@@ -70,7 +82,14 @@ const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ state, logIn, logOut, createDraft, updateDraftLocation }}
+      value={{
+        state,
+        logIn,
+        logOut,
+        createDraft,
+        updateDraftLocation,
+        discard,
+      }}
     >
       {children}
     </AuthContext.Provider>

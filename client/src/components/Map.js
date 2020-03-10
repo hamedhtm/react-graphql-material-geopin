@@ -3,6 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import ReactMapGL, { NavigationControl, Marker } from 'react-map-gl';
 import PinIcon from './PinIcon';
 import { AuthContext } from '../AuthContext';
+import Blog from './Blog';
 // import Button from "@material-ui/core/Button";
 // import Typography from "@material-ui/core/Typography";
 // import DeleteIcon from "@material-ui/icons/DeleteTwoTone";
@@ -86,6 +87,7 @@ const Map = ({ classes }) => {
           </Marker>
         )}
       </ReactMapGL>
+      <Blog />
     </div>
   );
 };
