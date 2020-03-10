@@ -8,12 +8,13 @@ import Splash from './pages/Splash';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import * as serviceWorker from './serviceWorker';
 import AuthProvider from './AuthContext';
+import AuthRoute from './utils/AuthRoute';
 
 const Root = () => {
   return (
     <Router>
       <Switch>
-        <Route exact path="/" component={App} />
+        <AuthRoute exact path="/" component={App} />
         <Route path="/login" component={Splash} />
       </Switch>
     </Router>

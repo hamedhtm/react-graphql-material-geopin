@@ -14,7 +14,7 @@ exports.findOrCreateUser = async token => {
 
 const verifyAuthToken = async token => {
   try {
-    const ticket = client.verifyIdToken({
+    const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.OAUTH_CLIENT_ID,
     });
@@ -25,7 +25,7 @@ const verifyAuthToken = async token => {
 };
 
 const checkIfUserExist = async email => {
-  await User.findOne({ email }).exec();
+  return await User.findOne({ email }).exec();
 };
 
 const createNewUser = async ({ name, email, picture }) => {

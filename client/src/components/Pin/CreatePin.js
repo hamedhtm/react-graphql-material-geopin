@@ -8,14 +8,20 @@ import LandscapeIcon from '@material-ui/icons/LandscapeOutlined';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/SaveTwoTone';
 import { AuthContext } from '../../AuthContext';
-
+import axios from 'axios';
+import { graphQLClient } from '../../utils/graphQLClient';
+import { CREATE_PIN } from '../../graphql/mutations';
 const CreatePin = ({ classes }) => {
-  const { discard } = useContext(AuthContext);
+  const {
+    discard,
+    state: { draft },
+  } = useContext(AuthContext);
   const [inputValue, setInputValue] = useState({
     title: '',
     image: '',
     content: '',
   });
+  const [loading, setLoading] = useState(false);
 
   const handleDiscard = () => {
     setInputValue({
@@ -26,6 +32,18 @@ const CreatePin = ({ classes }) => {
     discard();
   };
 
+  const handleUploadImage = async () => {
+    const data = new FormData();
+    data.append('file', inputValue.image);
+    data.append('upload_preset', 'GeoPins');
+    data.append('cloud_name', 'hamed4000');
+    const res = await axios.post(
+      'https://api.cloudinary.com/v1_1/hamed4000/image/upload',
+      data,
+    );
+    return res.data.url;
+  };
+
   const handleInputChange = ({ target: { name, value, files } }) => {
     setInputValue(prevState => ({
       ...prevState,
@@ -33,8 +51,24 @@ const CreatePin = ({ classes }) => {
     }));
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
+  const handleSubmit = async e => {
+    try {
+      setLoading(true);
+      e.preventDefault();
+      const idToken = window['gapi']['auth2']
+        .getAuthInstance()
+        .currentUser.get()
+        .getAuthResponse().id_token;
+      const url = await handleUploadImage();
+      const variables = { ...inputValue, image: url, ...draft };
+      const client = graphQLClient(idToken);
+      const { createPin } = await client.request(CREATE_PIN, variables);
+      console.log(createPin);
+      discard();
+    } catch (e) {
+      setLoading(false);
+      console.error(e);
+    }
   };
 
   return (
@@ -100,6 +134,7 @@ const CreatePin = ({ classes }) => {
           type={'submit'}
           variant={'contained'}
           color={'secondary'}
+          disabled={loading}
         >
           Save <SaveIcon className={classes.rightIcon} />
         </Button>
