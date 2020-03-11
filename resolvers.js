@@ -27,5 +27,8 @@ module.exports = {
       const pinAdded = await Pin.populate(newPin, 'author');
       return pinAdded;
     }),
+    deletePin: authenticated(async (parent, { pinId }) => {
+      return await Pin.findOneAndDelete({ _id: pinId }).exec();
+    }),
   },
 };

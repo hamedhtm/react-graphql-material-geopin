@@ -1,22 +1,25 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import ReactMapGL, { NavigationControl, Marker } from 'react-map-gl';
+import ReactMapGL, { NavigationControl, Marker, Popup } from 'react-map-gl';
 import PinIcon from './PinIcon';
 import { Context } from '../Context';
 import Blog from './Blog';
 import { graphQLClient } from '../utils/graphQLClient';
 import { GET_PINS } from '../graphql/queries';
 import differenceInMinutes from 'date-fns/difference_in_minutes';
-// import Button from "@material-ui/core/Button";
+import Button from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/DeleteTwoTone';
+import { DELETE_PIN } from '../graphql/mutations';
 // import Typography from "@material-ui/core/Typography";
-// import DeleteIcon from "@material-ui/icons/DeleteTwoTone";
 
 const Map = ({ classes }) => {
   const {
-    state: { draft, pins },
+    state: { draft, pins, currentUser },
     createDraft,
     updateDraftLocation,
     getPinsContext,
+    setCurrentPin,
+    deletePinContext,
   } = useContext(Context);
 
   const [viewport, setViewport] = useState({
@@ -71,6 +74,19 @@ const Map = ({ classes }) => {
     return isNewPin ? 'limegreen' : 'darkblue';
   };
 
+  const [popup, setPopup] = useState(null);
+  const handleSelectPin = pin => {
+    setPopup(pin);
+    setCurrentPin(pin);
+  };
+  const handleDeletePin = async pin => {
+    const client = graphQLClient();
+    const variables = { pinId: pin._id };
+    const { deletePin } = await client.request(DELETE_PIN, variables);
+    deletePinContext(deletePin);
+    setPopup(null);
+  };
+
   return (
     <div className={classes.root}>
       <ReactMapGL
@@ -114,9 +130,37 @@ const Map = ({ classes }) => {
               offsetLeft={-20}
               offsetTop={-37}
             >
-              <PinIcon size={30} color={highlightNewPin(pin)} />
+              <PinIcon
+                size={30}
+                color={highlightNewPin(pin)}
+                onClick={() => handleSelectPin(pin)}
+              />
             </Marker>
           ))}
+
+        {popup && (
+          <Popup
+            anchor={'top'}
+            latitude={popup.latitude}
+            longitude={popup.longitude}
+            closeOnClick={false}
+            onClose={() => setPopup(null)}
+            style={{ zIndex: 1 }}
+          >
+            <img
+              src={popup.image}
+              alt={popup.title}
+              className={classes.popupImage}
+            />
+            <div className={classes.popupTab}>
+              {currentUser._id === popup.author._id && (
+                <Button onClick={() => handleDeletePin(popup)}>
+                  <DeleteIcon className={classes.deleteIcon} />
+                </Button>
+              )}
+            </div>
+          </Popup>
+        )}
       </ReactMapGL>
       <Blog />
     </div>

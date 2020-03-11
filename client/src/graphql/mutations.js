@@ -32,3 +32,11 @@ export const CREATE_PIN = `
 }
 
 `;
+
+export const DELETE_PIN = `
+mutation($pinId: ID!) {
+  deletePin(pinId: $pinId) {
+    _id
+  }
+}
+`;

@@ -5,7 +5,7 @@ const initialState = {
   currentUser: null,
   location: null,
   pins: [],
-  // currentPin: null,
+  currentPin: null,
 };
 
 const authReducer = (state, { type, payload }) => {
@@ -24,6 +24,7 @@ const authReducer = (state, { type, payload }) => {
     case 'CREATE_DRAFT': {
       return {
         ...state,
+        currentPin: null,
         draft: {
           latitude: 0,
           longitude: 0,
@@ -56,13 +57,21 @@ const authReducer = (state, { type, payload }) => {
         pins: payload,
       };
     }
-    // case 'SET_CURRENT_PIN':{
-    //   return {
-    //     ...state,
-    //     currentPin: payload
-    //   }
-    // }
-
+    case 'SET_CURRENT_PIN': {
+      return {
+        ...state,
+        currentPin: payload,
+        draft: null,
+      };
+    }
+    case 'DELETE_PIN': {
+      const deletePin = state.pins.filter(pin => pin._id !== payload._id);
+      return {
+        ...state,
+        pins: deletePin,
+        currentPin: null,
+      };
+    }
     default:
       return state;
   }
@@ -117,12 +126,19 @@ const AuthProvider = ({ children }) => {
     });
   };
 
-  // const setCurrentPin = data => {
-  //   dispatch({
-  //     type: 'SET_CURRENT_PIN',
-  //     payload: data,
-  //   });
-  // };
+  const setCurrentPin = data => {
+    dispatch({
+      type: 'SET_CURRENT_PIN',
+      payload: data,
+    });
+  };
+
+  const deletePinContext = data => {
+    dispatch({
+      type: 'DELETE_PIN',
+      payload: data,
+    });
+  };
 
   return (
     <Context.Provider
@@ -135,7 +151,8 @@ const AuthProvider = ({ children }) => {
         discardDraft,
         getPinsContext,
         createPinContext,
-        // setCurrentPin,
+        setCurrentPin,
+        deletePinContext,
       }}
     >
       {children}
