@@ -7,15 +7,17 @@ import AddAPhotoIcon from '@material-ui/icons/AddAPhotoTwoTone';
 import LandscapeIcon from '@material-ui/icons/LandscapeOutlined';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/SaveTwoTone';
-import { AuthContext } from '../../AuthContext';
+import { Context } from '../../Context';
 import axios from 'axios';
 import { graphQLClient } from '../../utils/graphQLClient';
 import { CREATE_PIN } from '../../graphql/mutations';
+
 const CreatePin = ({ classes }) => {
   const {
-    discard,
+    discardDraft,
+    createPinContext,
     state: { draft },
-  } = useContext(AuthContext);
+  } = useContext(Context);
   const [inputValue, setInputValue] = useState({
     title: '',
     image: '',
@@ -29,7 +31,7 @@ const CreatePin = ({ classes }) => {
       image: '',
       content: '',
     });
-    discard();
+    discardDraft();
   };
 
   const handleUploadImage = async () => {
@@ -55,16 +57,12 @@ const CreatePin = ({ classes }) => {
     try {
       setLoading(true);
       e.preventDefault();
-      const idToken = window['gapi']['auth2']
-        .getAuthInstance()
-        .currentUser.get()
-        .getAuthResponse().id_token;
       const url = await handleUploadImage();
       const variables = { ...inputValue, image: url, ...draft };
-      const client = graphQLClient(idToken);
+      const client = graphQLClient();
       const { createPin } = await client.request(CREATE_PIN, variables);
-      console.log(createPin);
-      discard();
+      createPinContext(createPin);
+      discardDraft();
     } catch (e) {
       setLoading(false);
       console.error(e);

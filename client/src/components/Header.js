@@ -4,13 +4,13 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import MapIcon from '@material-ui/icons/Map';
 import Typography from '@material-ui/core/Typography';
-import { AuthContext } from '../AuthContext';
+import { Context } from '../Context';
 import LogOut from './Auth/LogOut';
 
 const Header = ({ classes }) => {
   const {
     state: { currentUser },
-  } = useContext(AuthContext);
+  } = useContext(Context);
   return (
     <div className={classes.root}>
       <AppBar position={'static'}>

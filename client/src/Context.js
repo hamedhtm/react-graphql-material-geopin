@@ -1,9 +1,11 @@
 import React, { createContext, useReducer } from 'react';
-export const AuthContext = createContext(undefined);
+export const Context = createContext(undefined);
 
 const initialState = {
   currentUser: null,
   location: null,
+  pins: [],
+  // currentPin: null,
 };
 
 const authReducer = (state, { type, payload }) => {
@@ -34,12 +36,33 @@ const authReducer = (state, { type, payload }) => {
         draft: payload,
       };
     }
-    case 'Discard': {
+    case 'DISCARD_DRAFT': {
       return {
         ...state,
         draft: null,
       };
     }
+    case 'CREATE_PIN': {
+      const newPin = payload;
+      const prevPins = state.pins.filter(pin => pin._id !== newPin._id);
+      return {
+        ...state,
+        pins: [...prevPins, newPin],
+      };
+    }
+    case 'GET_PINS': {
+      return {
+        ...state,
+        pins: payload,
+      };
+    }
+    // case 'SET_CURRENT_PIN':{
+    //   return {
+    //     ...state,
+    //     currentPin: payload
+    //   }
+    // }
+
     default:
       return state;
   }
@@ -67,9 +90,9 @@ const AuthProvider = ({ children }) => {
     });
   };
 
-  const discard = () => {
+  const discardDraft = () => {
     dispatch({
-      type: 'Discard',
+      type: 'DISCARD_DRAFT',
     });
   };
 
@@ -80,19 +103,43 @@ const AuthProvider = ({ children }) => {
     });
   };
 
+  const createPinContext = data => {
+    dispatch({
+      type: 'CREATE_PIN',
+      payload: data,
+    });
+  };
+
+  const getPinsContext = data => {
+    dispatch({
+      type: 'GET_PINS',
+      payload: data,
+    });
+  };
+
+  // const setCurrentPin = data => {
+  //   dispatch({
+  //     type: 'SET_CURRENT_PIN',
+  //     payload: data,
+  //   });
+  // };
+
   return (
-    <AuthContext.Provider
+    <Context.Provider
       value={{
         state,
         logIn,
         logOut,
         createDraft,
         updateDraftLocation,
-        discard,
+        discardDraft,
+        getPinsContext,
+        createPinContext,
+        // setCurrentPin,
       }}
     >
       {children}
-    </AuthContext.Provider>
+    </Context.Provider>
   );
 };
 

@@ -24,7 +24,10 @@ const PinSchema = new mongoose.Schema(
         },
       },
     ],
-    createdAt: String,
+    createdAt: {
+      type: Date,
+      default: new Date(),
+    },
   },
   { timeStamp: true },
 );

@@ -1,14 +1,14 @@
 import React, { useContext } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Paper } from '@material-ui/core';
-import { AuthContext } from '../AuthContext';
+import { Context } from '../Context';
 import CreatePin from './Pin/CreatePin';
 import NoContent from './Pin/NoContent';
 
 const Blog = ({ classes }) => {
   const {
     state: { draft },
-  } = useContext(AuthContext);
+  } = useContext(Context);
   return (
     <Paper className={classes.root}>
       {draft ? <CreatePin /> : <NoContent />}

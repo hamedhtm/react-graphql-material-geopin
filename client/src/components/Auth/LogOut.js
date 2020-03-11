@@ -3,10 +3,10 @@ import { withStyles } from '@material-ui/core/styles';
 import { GoogleLogout } from 'react-google-login';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import Typography from '@material-ui/core/Typography';
-import { AuthContext } from '../../AuthContext';
+import { Context } from '../../Context';
 
 const LogOut = ({ classes }) => {
-  const { logOut } = useContext(AuthContext);
+  const { logOut } = useContext(Context);
 
   return (
     <GoogleLogout

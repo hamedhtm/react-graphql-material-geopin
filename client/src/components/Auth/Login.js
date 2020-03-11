@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { GoogleLogin } from 'react-google-login';
 import { ME_QUERY } from '../../graphql/queries';
 import { withStyles } from '@material-ui/core/styles';
-import { AuthContext } from '../../AuthContext';
+import { Context } from '../../Context';
 import { graphQLClient } from '../../utils/graphQLClient';
 import { useHistory, Redirect } from 'react-router';
 // import Typography from "@material-ui/core/Typography";
@@ -11,7 +11,7 @@ const Login = ({ classes }) => {
   const {
     logIn,
     state: { currentUser },
-  } = useContext(AuthContext);
+  } = useContext(Context);
 
   const history = useHistory();
 

@@ -2,18 +2,22 @@ import React, { useContext, useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import ReactMapGL, { NavigationControl, Marker } from 'react-map-gl';
 import PinIcon from './PinIcon';
-import { AuthContext } from '../AuthContext';
+import { Context } from '../Context';
 import Blog from './Blog';
+import { graphQLClient } from '../utils/graphQLClient';
+import { GET_PINS } from '../graphql/queries';
+import differenceInMinutes from 'date-fns/difference_in_minutes';
 // import Button from "@material-ui/core/Button";
 // import Typography from "@material-ui/core/Typography";
 // import DeleteIcon from "@material-ui/icons/DeleteTwoTone";
 
 const Map = ({ classes }) => {
   const {
-    state: { draft },
+    state: { draft, pins },
     createDraft,
     updateDraftLocation,
-  } = useContext(AuthContext);
+    getPinsContext,
+  } = useContext(Context);
 
   const [viewport, setViewport] = useState({
     width: '100vw',
@@ -48,9 +52,24 @@ const Map = ({ classes }) => {
     }
   };
 
+  const getAllPins = async () => {
+    const client = graphQLClient();
+    const { getPins } = await client.request(GET_PINS);
+    // console.log(getPins);
+    getPinsContext(getPins);
+  };
+
   useEffect(() => {
     getUserLocation();
+    getAllPins();
   }, []);
+
+  const highlightNewPin = pin => {
+    // اگر پین کمتر از 30دقیقه پیش ایجاد شده باشد رنگش سبز و در غیر این صورت ابی هست
+    const isNewPin =
+      differenceInMinutes(new Date(), Number(pin.createdAt)) <= 30;
+    return isNewPin ? 'limegreen' : 'darkblue';
+  };
 
   return (
     <div className={classes.root}>
@@ -86,6 +105,18 @@ const Map = ({ classes }) => {
             <PinIcon size={30} color={'hotpink'} />
           </Marker>
         )}
+        {pins &&
+          pins.map(pin => (
+            <Marker
+              key={pin._id}
+              latitude={pin.latitude}
+              longitude={pin.longitude}
+              offsetLeft={-20}
+              offsetTop={-37}
+            >
+              <PinIcon size={30} color={highlightNewPin(pin)} />
+            </Marker>
+          ))}
       </ReactMapGL>
       <Blog />
     </div>
