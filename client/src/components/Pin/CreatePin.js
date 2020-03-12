@@ -15,7 +15,6 @@ import { CREATE_PIN } from '../../graphql/mutations';
 const CreatePin = ({ classes }) => {
   const {
     discardDraft,
-    createPinContext,
     state: { draft },
   } = useContext(Context);
   const [inputValue, setInputValue] = useState({
@@ -60,8 +59,7 @@ const CreatePin = ({ classes }) => {
       const url = await handleUploadImage();
       const variables = { ...inputValue, image: url, ...draft };
       const client = graphQLClient();
-      const { createPin } = await client.request(CREATE_PIN, variables);
-      createPinContext(createPin);
+      await client.request(CREATE_PIN, variables);
       discardDraft();
     } catch (e) {
       setLoading(false);

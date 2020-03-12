@@ -9,6 +9,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import * as serviceWorker from './serviceWorker';
 import AuthProvider from './Context';
 import AuthRoute from './utils/AuthRoute';
+import ApolloProvider from './ApolloProvider';
 
 const Root = () => {
   return (
@@ -22,9 +23,11 @@ const Root = () => {
 };
 
 ReactDOM.render(
-  <AuthProvider>
-    <Root />
-  </AuthProvider>,
+  <ApolloProvider>
+    <AuthProvider>
+      <Root />
+    </AuthProvider>
+  </ApolloProvider>,
   document.getElementById('root'),
 );
 

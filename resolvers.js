@@ -1,6 +1,8 @@
-const { AuthenticationError } = require('apollo-server');
+const { AuthenticationError, PubSub } = require('apollo-server');
 // const mongoose = require('mongoose');
 const Pin = require('./models/Pin');
+
+const pubSub = new PubSub();
 
 const authenticated = next => (parent, args, ctx, info) => {
   if (!ctx.currentUser) {
@@ -25,10 +27,13 @@ module.exports = {
         author: ctx.currentUser._id,
       }).save();
       const pinAdded = await Pin.populate(newPin, 'author');
+      await pubSub.publish('PIN_ADDED', { pinAdded });
       return pinAdded;
     }),
     deletePin: authenticated(async (parent, { pinId }) => {
-      return await Pin.findOneAndDelete({ _id: pinId }).exec();
+      const pinDeleted = await Pin.findOneAndDelete({ _id: pinId }).exec();
+      await pubSub.publish('PIN_DELETED', { pinDeleted });
+      return pinDeleted;
     }),
     createComment: authenticated(
       async (parent, { pinId, text }, { currentUser }, info) => {
@@ -39,9 +44,20 @@ module.exports = {
         )
           .populate('author')
           .populate('comments.author');
-        console.log(updatePin);
+        // await pubSub.publish('PIN_UPDATED', { updatePin });
         return updatePin;
       },
     ),
+  },
+  Subscription: {
+    pinAdded: {
+      subscribe: () => pubSub.asyncIterator('PIN_ADDED'),
+    },
+    pinDeleted: {
+      subscribe: () => pubSub.asyncIterator('PIN_DELETED'),
+    },
+    pinUpdated: {
+      subscribe: () => pubSub.asyncIterator('PIN_UPDATED'),
+    },
   },
 };

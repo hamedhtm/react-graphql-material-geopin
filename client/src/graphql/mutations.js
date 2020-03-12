@@ -38,7 +38,7 @@ mutation($pinId: ID!) {
   deletePin(pinId: $pinId) {
     _id
   }
-};
+}
 `;
 
 export const CREATE_COMMENT = `

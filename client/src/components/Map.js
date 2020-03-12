@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { Subscription } from 'react-apollo';
 import { withStyles } from '@material-ui/core/styles';
 import ReactMapGL, { NavigationControl, Marker, Popup } from 'react-map-gl';
 import PinIcon from './PinIcon';
@@ -10,6 +11,12 @@ import differenceInMinutes from 'date-fns/difference_in_minutes';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/DeleteTwoTone';
 import { DELETE_PIN } from '../graphql/mutations';
+import {
+  PIN_ADDED_SUB,
+  PIN_DELETED_SUB,
+  PIN_UPDATED_SUB,
+} from '../graphql/subscriptions';
+
 // import Typography from "@material-ui/core/Typography";
 
 const Map = ({ classes }) => {
@@ -20,6 +27,8 @@ const Map = ({ classes }) => {
     getPinsContext,
     setCurrentPin,
     deletePinContext,
+    createPinContext,
+    createCommentContext,
   } = useContext(Context);
 
   const [viewport, setViewport] = useState({
@@ -162,6 +171,27 @@ const Map = ({ classes }) => {
           </Popup>
         )}
       </ReactMapGL>
+      <Subscription
+        subscription={PIN_ADDED_SUB}
+        onSubscriptionData={({ subscriptionData }) => {
+          const { pinAdded } = subscriptionData.data;
+          createPinContext(pinAdded);
+        }}
+      />
+      {/*<Subscription*/}
+      {/*  subscription={PIN_UPDATED_SUB}*/}
+      {/*  onSubscriptionData={({ subscriptionData }) => {*/}
+      {/*    const { pinUpdated } = subscriptionData.data;*/}
+      {/*    createCommentContext(subscriptionData);*/}
+      {/*  }}*/}
+      {/*/>*/}
+      <Subscription
+        subscription={PIN_DELETED_SUB}
+        onSubscriptionData={({ subscriptionData }) => {
+          const { pinDeleted } = subscriptionData.data;
+          deletePinContext(pinDeleted);
+        }}
+      />
       <Blog />
     </div>
   );

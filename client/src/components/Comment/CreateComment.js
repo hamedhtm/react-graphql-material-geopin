@@ -15,11 +15,11 @@ const CreateComment = ({ classes }) => {
     createCommentContext,
   } = useContext(Context);
   const [comment, setComment] = useState('');
+
   const handleCommentSubmit = async () => {
     const variables = { pinId: currentPin._id, text: comment };
     const client = graphQLClient();
     const { createComment } = await client.request(CREATE_COMMENT, variables);
-    console.log(createComment);
     createCommentContext(createComment);
     setComment('');
   };
