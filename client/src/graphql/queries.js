@@ -25,7 +25,7 @@ export const GET_PINS = `
       email
       picture
     }
-    comment {
+    comments {
       text
       createdAt
       author {

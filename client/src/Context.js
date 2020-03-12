@@ -72,6 +72,16 @@ const authReducer = (state, { type, payload }) => {
         currentPin: null,
       };
     }
+    case 'CREATE_COMMENT': {
+      const updatePin = state.pins.map(pin => {
+        return pin.id === payload._id ? payload : pin;
+      });
+      return {
+        ...state,
+        pins: updatePin,
+        currentPin: payload,
+      };
+    }
     default:
       return state;
   }
@@ -140,6 +150,13 @@ const AuthProvider = ({ children }) => {
     });
   };
 
+  const createCommentContext = data => {
+    dispatch({
+      type: 'CREATE_COMMENT',
+      payload: data,
+    });
+  };
+
   return (
     <Context.Provider
       value={{
@@ -153,6 +170,7 @@ const AuthProvider = ({ children }) => {
         createPinContext,
         setCurrentPin,
         deletePinContext,
+        createCommentContext,
       }}
     >
       {children}

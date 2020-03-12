@@ -5,11 +5,13 @@ import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import FaceIcon from '@material-ui/icons/Face';
 import format from 'date-fns/format';
 import { Context } from '../../Context';
+import CreateComment from '../Comment/CreateComment';
+import Comments from '../Comment/Comments';
 
 const PinContent = ({ classes }) => {
   const {
     state: {
-      currentPin: { title, content, author, createdAt, comment },
+      currentPin: { title, content, author, createdAt, comments },
     },
   } = useContext(Context);
   return (
@@ -43,6 +45,8 @@ const PinContent = ({ classes }) => {
       <Typography variant={'subtitle1'} gutterBottom>
         {content}
       </Typography>
+      <CreateComment />
+      <Comments comments={comments} />
     </div>
   );
 };

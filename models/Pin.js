@@ -11,7 +11,7 @@ const PinSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'User',
     },
-    comment: [
+    comments: [
       {
         text: String,
         createdAt: {
